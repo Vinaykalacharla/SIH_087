@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Detect Pest / Disease from Image</h2>
+  <form method="post" enctype="multipart/form-data" action="/upload-pest">
+    <input type="file" name="image" accept="image/*" class="mb-4" required />
+    <button class="px-4 py-2 bg-green-600 text-white rounded">Upload & Analyze</button>
+  </form>
+  <hr class="my-4" />
+  <h3 class="font-semibold">Or use your camera</h3>
+  <button id="cameraBtn" class="mt-2 px-4 py-2 border rounded">Open Camera</button>
+  <video id="cameraStream" class="hidden mt-4" autoplay playsinline width="320"></video>
+  <canvas id="snapCanvas" class="hidden"></canvas>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+Step-by-Step Guide to Add New Tables and Seed Data in MySQL
+
+1. Open Command Prompt (Windows) or Terminal (Mac/Linux).
+
+2. Navigate to the directory where your SQL files are located.
+   For example:
+   cd path\\to\\your\\project\\directory
+
+3. Log in to MySQL server:
+   mysql -u your_username -p
+   (Enter your MySQL password when prompted)
+
+4. Select your database:
+   USE your_database_name;
+
+5. Exit MySQL prompt:
+   exit;
+
+6. Import the schema SQL file to create tables:
+   mysql -u your_username -p your_database_name < analytics_schema.sql
+
+7. Import the seed data SQL file to insert sample data:
+   mysql -u your_username -p your_database_name < seed_analytics_data.sql
+
+8. Verify tables and data:
+   - Log in to MySQL again:
+     mysql -u your_username -p
+   - Select your database:
+     USE your_database_name;
+   - Show tables:
+     SHOW TABLES;
+   - Check data in a table, e.g.:
+     SELECT * FROM farm_yield LIMIT 5;
+
+Notes:
+- Replace your_username and your_database_name with your actual MySQL username and database name.
+- Ensure the SQL files (analytics_schema.sql and seed_analytics_data.sql) are in the current directory or provide full paths.
+- Restart your Flask app after importing data to reflect changes.
+
+If you want, I can help you automate these steps with a script.

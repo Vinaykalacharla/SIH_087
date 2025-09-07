@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Crop Calendar</h2>
+
+<table class="table-auto w-full border-collapse border border-gray-300">
+  <thead>
+    <tr>
+      <th class="border border-gray-300 px-4 py-2">Month</th>
+      <th class="border border-gray-300 px-4 py-2">Activities</th>
+    </tr>
+  </thead>
+  <tbody id="calendarBody">
+  </tbody>
+</table>
+
+<script>
+async function fetchCropCalendar() {
+  const res = await fetch('/api/crop-calendar');
+  if (!res.ok) {
+    alert('Failed to fetch crop calendar');
+    return;
+  }
+  const data = await res.json();
+  const tbody = document.getElementById('calendarBody');
+  tbody.innerHTML = '';
+  data.forEach(item => {
+    const tr = document.createElement('tr');
+    const tdMonth = document.createElement('td');
+    tdMonth.textContent = item.month;
+    tdMonth.className = 'border border-gray-300 px-4 py-2 font-semibold';
+    const tdActivities = document.createElement('td');
+    tdActivities.textContent = item.activities.join(', ');
+    tdActivities.className = 'border border-gray-300 px-4 py-2';
+    tr.appendChild(tdMonth);
+    tr.appendChild(tdActivities);
+    tbody.appendChild(tr);
+  });
+}
+
+fetchCropCalendar();
+</script>
+{% endblock %}

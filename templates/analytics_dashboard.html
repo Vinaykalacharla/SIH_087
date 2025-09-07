@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Analytics Dashboard</h2>
+
+<div class="grid grid-cols-4 gap-6 mb-6">
+  <div class="bg-white p-4 rounded shadow">
+    <h3 class="font-semibold">Farm Area</h3>
+    <p id="farmArea" class="text-3xl">-</p>
+    <p>acres</p>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <h3 class="font-semibold">Active Crops</h3>
+    <p id="activeCrops" class="text-3xl">-</p>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <h3 class="font-semibold">Avg Yield</h3>
+    <p id="avgYield" class="text-3xl">-</p>
+    <p>tons/hectare</p>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <h3 class="font-semibold">Monthly Revenue</h3>
+    <p id="monthlyRevenue" class="text-3xl">-</p>
+  </div>
+</div>
+
+<div class="bg-white p-4 rounded shadow mb-6">
+  <h3 class="font-semibold mb-2">Yield Performance</h3>
+  <canvas id="yieldChart" height="150"></canvas>
+</div>
+
+<div class="bg-white p-4 rounded shadow">
+  <h3 class="font-semibold mb-2">Revenue & Profit Trend</h3>
+  <canvas id="revenueChart" height="150"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+async function fetchAnalytics() {
+  const res = await fetch('/api/analytics/summary');
+  if (!res.ok) {
+    alert('Failed to load analytics data');
+    return;
+  }
+  const data = await res.json();
+
+  // Mock data for farm area and active crops
+  document.getElementById('farmArea').textContent = '2.5';
+  document.getElementById('activeCrops').textContent = '4';
+  document.getElementById('avgYield').textContent = '4.2';
+  document.getElementById('monthlyRevenue').textContent = '₹32K';
+
+  // Prepare data for charts
+  const labels = data.yield.map(d => `${d.year}-${String(d.month).padStart(2, '0')}`);
+  const yieldValues = data.yield.map(d => d.total_yield);
+  const revenueValues = data.revenue.map(d => d.total_revenue);
+
+  const ctxYield = document.getElementById('yieldChart').getContext('2d');
+  new Chart(ctxYield, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Yield',
+        data: yieldValues,
+        backgroundColor: 'rgba(34, 197, 94, 0.7)'
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+  new Chart(ctxRevenue, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Revenue',
+        data: revenueValues,
+        borderColor: 'rgba(234, 179, 8, 1)',
+        fill: true,
+        backgroundColor: 'rgba(234, 179, 8, 0.3)'
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+fetchAnalytics();
+</script>
+{% endblock %}

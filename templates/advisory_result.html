@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-xl font-bold">Advisory Result</h2>
+  <pre>{{ result | tojson(indent=2) }}</pre>
+  <a href="/dashboard" class="mt-4 inline-block">Back to dashboard</a>
+</div>
+{% endblock %}

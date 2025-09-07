@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Crop Advisory</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+  </head>
+  <body class="bg-slate-50 text-gray-900">
+    <nav class="bg-white shadow p-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="font-bold text-xl">SmartCrop</a>
+        <div>
+          {% if session.user_id %}
+            <a href="/dashboard" class="mr-4">Dashboard</a>
+            <a href="/analytics" class="mr-4">Analytics</a>
+            <a href="/weather" class="mr-4">Weather</a>
+            <a href="/crop-calendar" class="mr-4">Crop Calendar</a>
+            <a href="/soil-analysis" class="mr-4">Soil Analysis</a>
+            <a href="/market-prices" class="mr-4">Market Prices</a>
+            <a href="/farm-management" class="mr-4">Farm Management</a>
+            <a href="/upload-pest" class="mr-4">Detect Pest</a>
+            <a href="/logout" class="btn">Logout</a>
+          {% else %}
+            <a href="/login" class="mr-4">Login</a>
+            <a href="/register" class="btn">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    <main class="container mx-auto py-8">
+      {% block content %}{% endblock %}
+    </main>
+    <script src="/static/js/main.js"></script>
+  </body>
+</html>

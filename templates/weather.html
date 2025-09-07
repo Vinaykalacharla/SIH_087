@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Weather Forecast</h2>
+
+<div class="mb-4">
+  <label for="location" class="block mb-1 font-semibold">Location</label>
+  <input type="text" id="location" class="border rounded p-2 w-64" placeholder="Enter location" value="New York">
+  <button id="btnFetch" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Get Weather</button>
+</div>
+
+<div id="weatherInfo" class="bg-white p-4 rounded shadow">
+  <h3 class="font-semibold mb-2">Current Weather</h3>
+  <div class="grid grid-cols-4 gap-4 text-center">
+    <div class="bg-green-100 p-4 rounded">
+      <div class="text-3xl" id="temp">-</div>
+      <div>Temperature (°C)</div>
+    </div>
+    <div class="bg-blue-100 p-4 rounded">
+      <div class="text-3xl" id="humidity">-</div>
+      <div>Humidity (%)</div>
+    </div>
+    <div class="bg-gray-100 p-4 rounded">
+      <div class="text-3xl" id="wind">-</div>
+      <div>Wind Speed (m/s)</div>
+    </div>
+    <div class="bg-yellow-100 p-4 rounded">
+      <div class="text-3xl" id="condition">-</div>
+      <div>Condition</div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function fetchWeather(location) {
+  const res = await fetch(`/api/weather/current?location=${encodeURIComponent(location)}`);
+  if (!res.ok) {
+    alert('Failed to fetch weather data');
+    return;
+  }
+  const data = await res.json();
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
+  document.getElementById('temp').textContent = data.temperature;
+  document.getElementById('humidity').textContent = data.humidity;
+  document.getElementById('wind').textContent = data.wind_speed;
+  document.getElementById('condition').textContent = data.condition;
+}
+
+document.getElementById('btnFetch').addEventListener('click', () => {
+  const loc = document.getElementById('location').value.trim();
+  if (loc) {
+    fetchWeather(loc);
+  }
+});
+
+// Initial fetch
+fetchWeather(document.getElementById('location').value);
+</script>
+{% endblock %}

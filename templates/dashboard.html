@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid md:grid-cols-3 gap-6">
+  <div class="col-span-2 bg-white p-6 rounded shadow">
+    <h3 class="font-bold text-lg">Your Farm Snapshot</h3>
+    <div id="weatherCard" class="mt-4">Loading weather...</div>
+    <div class="mt-4">
+      <a href="/upload-pest" class="px-4 py-2 bg-yellow-500 text-white rounded">Detect Pest</a>
+    </div>
+  </div>
+  <div class="bg-white p-6 rounded shadow">
+    <h3 class="font-bold">Quick Actions</h3>
+    <ul class="mt-3">
+      <li><a href="/profile">Edit Profile</a></li>
+      <li><a href="/api/recommend">Get Recommendation (API)</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <a href="/analytics" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Analytics Dashboard</h4>
+    <p>View farm yield, revenue, and goals.</p>
+  </a>
+  <a href="/weather" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Weather Forecast</h4>
+    <p>Check current weather conditions.</p>
+  </a>
+  <a href="/crop-calendar" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Crop Calendar</h4>
+    <p>See monthly farming activities.</p>
+  </a>
+  <a href="/soil-analysis" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Soil Analysis</h4>
+    <p>Analyze soil nutrients and pH levels.</p>
+  </a>
+  <a href="/market-prices" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Market Prices</h4>
+    <p>View current crop prices and trends.</p>
+  </a>
+  <a href="/farm-management" class="block bg-white p-6 rounded shadow hover:shadow-lg transition">
+    <h4 class="font-semibold text-lg mb-2">Farm Management</h4>
+    <p>Manage your farm profile and crops.</p>
+  </a>
+</div>
+{% endblock %}
