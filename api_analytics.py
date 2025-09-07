@@ -41,6 +41,18 @@ def analytics_summary():
         """, (user_id,))
         goals_data = cur.fetchall()
 
+        # Fetch crops from farmer_profiles
+        cur.execute("""
+            SELECT crops
+            FROM farmer_profiles
+            WHERE user_id=%s
+        """, (user_id,))
+        crops_row = cur.fetchone()
+        active_crops_count = 0
+        if crops_row and crops_row[0]:
+            crops_list = [crop.strip() for crop in crops_row[0].split(',') if crop.strip()]
+            active_crops_count = len(crops_list)
+
         cur.close()
     finally:
         db_module.close_conn(conn)
@@ -48,5 +60,6 @@ def analytics_summary():
     return jsonify({
         'yield': yield_data,
         'revenue': revenue_data,
-        'goals': goals_data
+        'goals': goals_data,
+        'active_crops': active_crops_count
     })

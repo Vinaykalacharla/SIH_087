@@ -33,7 +33,7 @@
           <i class="fas fa-bug mr-2"></i>
           Detect Pest
         </a>
-        <a href="/api/recommend" class="btn-secondary flex items-center">
+        <a href="/ai-recommendation" class="btn-secondary flex items-center">
           <i class="fas fa-lightbulb mr-2"></i>
           Get AI Recommendation
         </a>
@@ -96,5 +96,18 @@
       <p>Manage your farm profile, crops, and resources efficiently.</p>
     </a>
   </div>
-</div>
+
+  <!-- Recommendation Modal -->
+  <div id="recommendationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
+      <h3 class="text-xl font-bold mb-4">AI Recommendation</h3>
+      <div id="recommendationContent" class="mb-4"></div>
+      <button id="closeRecommendation" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Remove event listener that prevents default navigation on btn-secondary links
+    // This allows normal anchor tag navigation for "Get AI Recommendation"
+  </script>
 {% endblock %}

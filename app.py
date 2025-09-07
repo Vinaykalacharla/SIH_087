@@ -36,6 +36,10 @@ def create_app():
     def index():
         return render_template('index.html')
 
+    @app.route('/ai-recommendation')
+    def ai_recommendation():
+        return render_template('ai_recommendation.html')
+
     return app
 
 if __name__ == '__main__':

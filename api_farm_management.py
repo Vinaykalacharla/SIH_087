@@ -11,9 +11,10 @@ def farm_management():
 
     if request.method == 'POST':
         # Update farm profile
-        location = request.form.get('location')
-        soil_type = request.form.get('soil_type')
-        crops = request.form.get('crops')
+        data = request.get_json()
+        location = data.get('location')
+        soil_type = data.get('soil_type')
+        crops = data.get('crops')
         conn = db_module.get_conn()
         try:
             cur = conn.cursor()

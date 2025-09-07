@@ -2,6 +2,56 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-4">Farm Management</h2>
 
-<p>Manage your farm operations and resources here. (Feature under development)</p>
+<form id="farmProfileForm" class="max-w-lg bg-white p-6 rounded shadow" method="POST" action="/farm-management/update">
+  <div class="mb-4">
+    <label for="location" class="block font-semibold mb-1">Location</label>
+    <input type="text" id="location" name="location" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+  <div class="mb-4">
+    <label for="soil_type" class="block font-semibold mb-1">Soil Type</label>
+    <input type="text" id="soil_type" name="soil_type" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+  <div class="mb-4">
+    <label for="crops" class="block font-semibold mb-1">Crops (comma separated)</label>
+    <input type="text" id="crops" name="crops" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+  <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Save</button>
+</form>
+
+<script>
+async function fetchFarmProfile() {
+  const res = await fetch('/farm-management');
+  if (!res.ok) {
+    alert('Failed to load farm profile');
+    return;
+  }
+  const data = await res.json();
+  document.getElementById('location').value = data.location || '';
+  document.getElementById('soil_type').value = data.soil_type || '';
+  document.getElementById('crops').value = data.crops || '';
+}
+
+document.getElementById('farmProfileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const payload = {
+    location: formData.get('location'),
+    soil_type: formData.get('soil_type'),
+    crops: formData.get('crops')
+  };
+  const res = await fetch('/farm-management', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (res.ok) {
+    alert('Farm profile updated successfully');
+  } else {
+    alert('Failed to update farm profile');
+  }
+});
+
+fetchFarmProfile();
+</script>
 
 {% endblock %}

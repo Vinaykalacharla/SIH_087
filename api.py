@@ -38,3 +38,32 @@ def recommend():
         'recommendation': recommendation,
         'confidence': confidence
     })
+
+@bp.route('/api/recommendations/user', methods=['GET'])
+def get_user_recommendation():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn = db_module.get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT crop, soil_type, recommendation, confidence FROM recommendations WHERE user_id=%s ORDER BY id DESC LIMIT 1",
+            (user_id,)
+        )
+        rec = cur.fetchone()
+        cur.close()
+    finally:
+        db_module.close_conn(conn)
+
+    if not rec:
+        return jsonify({'error': 'No recommendations found'}), 404
+
+    crop, soil_type, recommendation, confidence = rec
+    return jsonify({
+        'crop': crop,
+        'soil': soil_type,
+        'recommendation': recommendation,
+        'confidence': confidence
+    })

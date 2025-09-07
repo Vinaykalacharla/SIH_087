@@ -5,28 +5,125 @@
     <div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
     </div>
-    <form class="mt-8 space-y-6" method="post" action="/login">
+    <form id="loginForm" class="mt-8 space-y-6" method="post" action="/login" novalidate>
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
           <label for="email-address" class="sr-only">Email address</label>
           <input id="email-address" name="email" type="email" autocomplete="email" required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
             placeholder="Email address" />
+          <p id="emailError" class="text-red-500 text-sm mt-1 hidden">Please enter a valid email address.</p>
         </div>
-        <div>
+        <div class="relative">
           <label for="password" class="sr-only">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
             placeholder="Password" />
+          <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+          <p id="passwordError" class="text-red-500 text-sm mt-1 hidden">Password is required.</p>
         </div>
       </div>
       <div>
-        <button type="submit"
+        <button type="submit" id="submitBtn"
           class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-          Sign in
+          <span id="btnText">Sign in</span>
+          <svg id="loadingSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
         </button>
       </div>
     </form>
   </div>
 </div>
+
+<script type="module">
+  import { startSpeechRecognition } from '/static/js/voice-utils.js';
+
+  const loginForm = document.getElementById('loginForm');
+  const emailInput = document.getElementById('email-address');
+  const passwordInput = document.getElementById('password');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const togglePassword = document.getElementById('togglePassword');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  // Create mic buttons for email and password inputs
+  const micEmail = document.createElement('button');
+  micEmail.type = 'button';
+  micEmail.title = 'Speak Email';
+  micEmail.textContent = '🎤';
+  micEmail.className = 'ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+  emailInput.parentNode.appendChild(micEmail);
+
+  const micPassword = document.createElement('button');
+  micPassword.type = 'button';
+  micPassword.title = 'Speak Password';
+  micPassword.textContent = '🎤';
+  micPassword.className = 'ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+  passwordInput.parentNode.appendChild(micPassword);
+
+  micEmail.addEventListener('click', () => {
+    startSpeechRecognition('en-IN', (result) => {
+      emailInput.value = result;
+    }, (error) => {
+      alert('Speech recognition error: ' + error);
+    });
+  });
+
+  micPassword.addEventListener('click', () => {
+    startSpeechRecognition('en-IN', (result) => {
+      passwordInput.value = result;
+    }, (error) => {
+      alert('Speech recognition error: ' + error);
+    });
+  });
+
+  togglePassword.addEventListener('click', () => {
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.223-3.434m1.45-1.45A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.05 10.05 0 01-1.477 2.765M15 12a3 3 0 11-6 0 3 3 0 016 0z" />';
+
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+    }
+  });
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let valid = true;
+
+    if (!emailInput.value || !emailInput.value.includes('@')) {
+      emailError.classList.remove('hidden');
+      valid = false;
+    } else {
+      emailError.classList.add('hidden');
+    }
+
+    if (!passwordInput.value) {
+      passwordError.classList.remove('hidden');
+      valid = false;
+    } else {
+      passwordError.classList.add('hidden');
+    }
+
+    if (!valid) return;
+
+    btnText.textContent = '';
+    loadingSpinner.classList.remove('hidden');
+    submitBtn.disabled = true;
+
+    loginForm.submit();
+  });
+</script>
 {% endblock %}

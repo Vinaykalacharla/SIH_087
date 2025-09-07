@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">AI Recommendations</h2>
+<div id="recommendationContainer" class="bg-white p-6 rounded shadow max-w-lg">
+  <p>Loading recommendations...</p>
+</div>
+
+<script>
+async function loadRecommendations() {
+  const container = document.getElementById('recommendationContainer');
+  try {
+    const res = await fetch('/api/recommendations/user');
+    if (!res.ok) {
+      container.innerHTML = '<p class="text-red-500">Failed to load recommendations.</p>';
+      return;
+    }
+    const data = await res.json();
+    if (!data || !data.recommendation) {
+      container.innerHTML = '<p>No recommendations available.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <p><strong>Crop:</strong> ${data.crop}</p>
+      <p><strong>Soil:</strong> ${data.soil}</p>
+      <p><strong>Recommendation:</strong> ${data.recommendation}</p>
+      <p><strong>Confidence:</strong> ${(data.confidence * 100).toFixed(2)}%</p>
+    `;
+  } catch (error) {
+    container.innerHTML = '<p class="text-red-500">Error loading recommendations.</p>';
+  }
+}
+loadRecommendations();
+</script>
+{% endblock %}

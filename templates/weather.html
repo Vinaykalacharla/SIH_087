@@ -3,13 +3,35 @@
 <h2 class="text-2xl font-bold mb-4">Weather Forecast</h2>
 
 <div class="mb-4">
-  <label for="location" class="block mb-1 font-semibold">Location</label>
-  <input type="text" id="location" class="border rounded p-2 w-64" placeholder="Enter location" value="New York">
-  <button id="btnFetch" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Get Weather</button>
+  <label for="stateSelect" class="block mb-1 font-semibold">State</label>
+  <div class="flex items-center">
+    <select id="stateSelect" class="border rounded p-2 w-64">
+      <option value="">Select State</option>
+    </select>
+    <button id="micState" title="Speak State" class="ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      🎤
+    </button>
+  </div>
 </div>
 
-<div id="weatherInfo" class="bg-white p-4 rounded shadow">
+<div class="mb-4">
+  <label for="districtSelect" class="block mb-1 font-semibold">District</label>
+  <div class="flex items-center">
+    <select id="districtSelect" class="border rounded p-2 w-64" disabled>
+      <option value="">Select District</option>
+    </select>
+    <button id="micDistrict" title="Speak District" class="ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700" disabled>
+      🎤
+    </button>
+  </div>
+</div>
+
+<button id="btnFetch" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Get Weather</button>
+<button id="btnSpeak" class="bg-yellow-600 text-white px-4 py-2 rounded ml-2" disabled>🔊 Speak Forecast</button>
+
+<div id="weatherInfo" class="bg-white p-4 rounded shadow mt-4">
   <h3 class="font-semibold mb-2">Current Weather</h3>
+  <div id="weatherError" class="text-red-600 font-semibold mb-2 hidden"></div>
   <div class="grid grid-cols-4 gap-4 text-center">
     <div class="bg-green-100 p-4 rounded">
       <div class="text-3xl" id="temp">-</div>
@@ -30,32 +52,193 @@
   </div>
 </div>
 
+<div id="forecastInfo" class="bg-white p-4 rounded shadow mt-6">
+  <h3 class="font-semibold mb-2">7-Day Forecast</h3>
+  <div id="forecastContainer" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+    <!-- Forecast cards will be inserted here -->
+  </div>
+</div>
+
 <script>
-async function fetchWeather(location) {
-  const res = await fetch(`/api/weather/current?location=${encodeURIComponent(location)}`);
-  if (!res.ok) {
-    alert('Failed to fetch weather data');
-    return;
+const stateSelect = document.getElementById('stateSelect');
+const districtSelect = document.getElementById('districtSelect');
+const micState = document.getElementById('micState');
+const micDistrict = document.getElementById('micDistrict');
+const btnFetch = document.getElementById('btnFetch');
+const btnSpeak = document.getElementById('btnSpeak');
+const weatherError = document.getElementById('weatherError');
+const forecastContainer = document.getElementById('forecastContainer');
+
+let currentForecastText = '';
+
+async function loadStatesAndDistricts() {
+  try {
+    const res = await fetch('/static/data/india_states_districts.json');
+    const data = await res.json();
+    for (const state in data) {
+      const option = document.createElement('option');
+      option.value = state;
+      option.textContent = state;
+      stateSelect.appendChild(option);
+    }
+    stateSelect.disabled = false;
+    stateSelect.addEventListener('change', () => {
+      const districts = data[stateSelect.value] || [];
+      districtSelect.innerHTML = '<option value="">Select District</option>';
+      districts.forEach(district => {
+        const option = document.createElement('option');
+        option.value = district;
+        option.textContent = district;
+        districtSelect.appendChild(option);
+      });
+      districtSelect.disabled = districts.length === 0;
+      micDistrict.disabled = districts.length === 0;
+    });
+  } catch (error) {
+    console.error('Failed to load states and districts:', error);
   }
-  const data = await res.json();
-  if (data.error) {
-    alert(data.error);
-    return;
-  }
-  document.getElementById('temp').textContent = data.temperature;
-  document.getElementById('humidity').textContent = data.humidity;
-  document.getElementById('wind').textContent = data.wind_speed;
-  document.getElementById('condition').textContent = data.condition;
 }
 
-document.getElementById('btnFetch').addEventListener('click', () => {
-  const loc = document.getElementById('location').value.trim();
-  if (loc) {
-    fetchWeather(loc);
+async function fetchWeather(state, district) {
+  const location = `${district}, ${state}`;
+  const urlCurrent = `/api/weather/current?location=${encodeURIComponent(location)}`;
+  const urlForecast = `/api/weather/forecast?location=${encodeURIComponent(location)}`;
+
+  weatherError.classList.add('hidden');
+  weatherError.textContent = '';
+  btnSpeak.disabled = true;
+  forecastContainer.innerHTML = '';
+  currentForecastText = '';
+
+  try {
+    const resCurrent = await fetch(urlCurrent);
+    if (!resCurrent.ok) {
+      const err = await resCurrent.json();
+      weatherError.textContent = err.error || 'Failed to fetch current weather data';
+      weatherError.classList.remove('hidden');
+      return;
+    }
+    const dataCurrent = await resCurrent.json();
+    document.getElementById('temp').textContent = dataCurrent.temperature;
+    document.getElementById('humidity').textContent = dataCurrent.humidity;
+    document.getElementById('wind').textContent = dataCurrent.wind_speed;
+    document.getElementById('condition').textContent = dataCurrent.condition;
+
+    const resForecast = await fetch(urlForecast);
+    if (!resForecast.ok) {
+      const err = await resForecast.json();
+      weatherError.textContent = err.error || 'Failed to fetch forecast data';
+      weatherError.classList.remove('hidden');
+      return;
+    }
+    const dataForecast = await resForecast.json();
+    forecastContainer.innerHTML = '';
+    currentForecastText = `Weather forecast for ${location}: `;
+    dataForecast.daily_forecasts.forEach(day => {
+      const date = new Date(day.date * 1000);
+      const options = { weekday: 'short', month: 'short', day: 'numeric' };
+      const dateStr = date.toLocaleDateString(undefined, options);
+      const iconUrl = `http://openweathermap.org/img/wn/${day.icon}@2x.png`;
+      const card = document.createElement('div');
+      card.className = 'bg-blue-100 p-4 rounded shadow';
+      card.innerHTML = `
+        <div class="font-semibold">${dateStr}</div>
+        <img src="${iconUrl}" alt="${day.condition}" class="mx-auto" />
+        <div>${day.condition}</div>
+        <div>Day: ${day.temp_day} °C</div>
+        <div>Night: ${day.temp_night} °C</div>
+        <div>Humidity: ${day.humidity}%</div>
+        <div>Wind: ${day.wind_speed} m/s</div>
+      `;
+      forecastContainer.appendChild(card);
+
+      currentForecastText += `${dateStr}: ${day.condition}, day temperature ${day.temp_day} degrees Celsius, night temperature ${day.temp_night} degrees Celsius. `;
+    });
+    btnSpeak.disabled = false;
+  } catch (error) {
+    weatherError.textContent = 'Error fetching weather data';
+    weatherError.classList.remove('hidden');
+    console.error('Error fetching weather data:', error);
+  }
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('Speech synthesis not supported in this browser.');
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(utterance);
+}
+
+micState.addEventListener('click', () => {
+  startSpeechRecognition('state');
+});
+
+micDistrict.addEventListener('click', () => {
+  startSpeechRecognition('district');
+});
+
+btnSpeak.addEventListener('click', () => {
+  if (currentForecastText) {
+    speakText(currentForecastText);
   }
 });
 
-// Initial fetch
-fetchWeather(document.getElementById('location').value);
+function startSpeechRecognition(type) {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Speech recognition not supported in this browser.');
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    const speechResult = event.results[0][0].transcript.trim();
+    if (type === 'state') {
+      const options = Array.from(stateSelect.options).map(opt => opt.value.toLowerCase());
+      const matched = options.find(opt => opt === speechResult.toLowerCase());
+      if (matched) {
+        stateSelect.value = matched;
+        stateSelect.dispatchEvent(new Event('change'));
+      } else {
+        alert(`State "${speechResult}" not recognized.`);
+      }
+    } else if (type === 'district') {
+      if (districtSelect.disabled) {
+        alert('Please select a state first.');
+        return;
+      }
+      const options = Array.from(districtSelect.options).map(opt => opt.value.toLowerCase());
+      const matched = options.find(opt => opt === speechResult.toLowerCase());
+      if (matched) {
+        districtSelect.value = matched;
+      } else {
+        alert(`District "${speechResult}" not recognized.`);
+      }
+    }
+  };
+
+  recognition.onerror = (event) => {
+    alert('Speech recognition error: ' + event.error);
+  };
+
+  recognition.start();
+});
+
+btnFetch.addEventListener('click', () => {
+  const state = stateSelect.value;
+  const district = districtSelect.value;
+  if (state && district) {
+    fetchWeather(state, district);
+  } else {
+    alert('Please select both state and district');
+  }
+});
+
+loadStatesAndDistricts();
 </script>
 {% endblock %}

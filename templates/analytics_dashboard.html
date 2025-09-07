@@ -43,9 +43,9 @@ async function fetchAnalytics() {
   }
   const data = await res.json();
 
-  // Mock data for farm area and active crops
+  // Mock data for farm area and avg yield
   document.getElementById('farmArea').textContent = '2.5';
-  document.getElementById('activeCrops').textContent = '4';
+  document.getElementById('activeCrops').textContent = data.active_crops || '-';
   document.getElementById('avgYield').textContent = '4.2';
   document.getElementById('monthlyRevenue').textContent = '₹32K';
 
