@@ -47,12 +47,33 @@ def weather():
         return redirect(url_for('auth.login'))
     return render_template('weather.html')
 
+@bp.route('/soil-analysis')
+def soil_analysis():
+    uid = current_user_id()
+    if not uid:
+        return redirect(url_for('auth.login'))
+    return render_template('soil_analysis.html')
+
 @bp.route('/crop-calendar')
 def crop_calendar():
     uid = current_user_id()
     if not uid:
         return redirect(url_for('auth.login'))
     return render_template('crop_calendar.html')
+
+@bp.route('/market-prices')
+def market_prices():
+    uid = current_user_id()
+    if not uid:
+        return redirect(url_for('auth.login'))
+    return render_template('market_prices.html')
+
+@bp.route('/farm-management')
+def farm_management():
+    uid = current_user_id()
+    if not uid:
+        return redirect(url_for('auth.login'))
+    return render_template('farm_management.html')
 
 @bp.route('/upload-pest', methods=['GET', 'POST'])
 def upload_pest():

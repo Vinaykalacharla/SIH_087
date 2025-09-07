@@ -6,32 +6,73 @@
     <title>Smart Crop Advisory</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   </head>
-  <body class="bg-slate-50 text-gray-900">
-    <nav class="bg-white shadow p-4">
-      <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="font-bold text-xl">SmartCrop</a>
-        <div>
+  <body class="bg-gradient-to-br from-green-50 to-blue-50 text-gray-900 min-h-screen">
+    <nav class="bg-white shadow-lg border-b border-green-100">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <a href="/" class="flex items-center space-x-2">
+            <i class="fas fa-leaf text-green-600 text-2xl"></i>
+            <span class="font-bold text-xl text-gray-800">SmartCrop</span>
+          </a>
+          <div class="hidden md:flex space-x-6 items-center">
+            {% if session.user_id %}
+              <a href="/dashboard" class="text-gray-700 hover:text-green-600 transition-colors">Dashboard</a>
+              <a href="/analytics" class="text-gray-700 hover:text-green-600 transition-colors">Analytics</a>
+              <a href="/weather" class="text-gray-700 hover:text-green-600 transition-colors">Weather</a>
+              <a href="/crop-calendar" class="text-gray-700 hover:text-green-600 transition-colors">Crop Calendar</a>
+              <a href="/soil-analysis" class="text-gray-700 hover:text-green-600 transition-colors">Soil Analysis</a>
+              <a href="/market-prices" class="text-gray-700 hover:text-green-600 transition-colors">Market Prices</a>
+              <a href="/farm-management" class="text-gray-700 hover:text-green-600 transition-colors">Farm Management</a>
+              <a href="/upload-pest" class="text-gray-700 hover:text-green-600 transition-colors">Detect Pest</a>
+              <button id="darkModeToggle" aria-label="Toggle Dark Mode" class="ml-4 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i id="darkModeIcon" class="fas fa-moon text-gray-700 dark:text-gray-300"></i>
+              </button>
+              <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">Logout</a>
+            {% else %}
+              <a href="/login" class="text-gray-700 hover:text-green-600 transition-colors">Login</a>
+              <a href="/register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">Sign Up</a>
+            {% endif %}
+          </div>
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button id="mobile-menu-btn" class="text-gray-700 hover:text-green-600">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-gray-200">
           {% if session.user_id %}
-            <a href="/dashboard" class="mr-4">Dashboard</a>
-            <a href="/analytics" class="mr-4">Analytics</a>
-            <a href="/weather" class="mr-4">Weather</a>
-            <a href="/crop-calendar" class="mr-4">Crop Calendar</a>
-            <a href="/soil-analysis" class="mr-4">Soil Analysis</a>
-            <a href="/market-prices" class="mr-4">Market Prices</a>
-            <a href="/farm-management" class="mr-4">Farm Management</a>
-            <a href="/upload-pest" class="mr-4">Detect Pest</a>
-            <a href="/logout" class="btn">Logout</a>
+            <div class="flex flex-col space-y-2 mt-4">
+              <a href="/dashboard" class="text-gray-700 hover:text-green-600 py-2">Dashboard</a>
+              <a href="/analytics" class="text-gray-700 hover:text-green-600 py-2">Analytics</a>
+              <a href="/weather" class="text-gray-700 hover:text-green-600 py-2">Weather</a>
+              <a href="/crop-calendar" class="text-gray-700 hover:text-green-600 py-2">Crop Calendar</a>
+              <a href="/soil-analysis" class="text-gray-700 hover:text-green-600 py-2">Soil Analysis</a>
+              <a href="/market-prices" class="text-gray-700 hover:text-green-600 py-2">Market Prices</a>
+              <a href="/farm-management" class="text-gray-700 hover:text-green-600 py-2">Farm Management</a>
+              <a href="/upload-pest" class="text-gray-700 hover:text-green-600 py-2">Detect Pest</a>
+              <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg mt-2">Logout</a>
+            </div>
           {% else %}
-            <a href="/login" class="mr-4">Login</a>
-            <a href="/register" class="btn">Sign Up</a>
+            <div class="flex flex-col space-y-2 mt-4">
+              <a href="/login" class="text-gray-700 hover:text-green-600 py-2">Login</a>
+              <a href="/register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">Sign Up</a>
+            </div>
           {% endif %}
         </div>
       </div>
     </nav>
-    <main class="container mx-auto py-8">
+    <main class="w-full max-w-full px-4 py-8">
       {% block content %}{% endblock %}
     </main>
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+      <div class="container mx-auto px-4 text-center">
+        <p>&copy; 2024 SmartCrop Advisory. Empowering farmers with AI-driven solutions.</p>
+      </div>
+    </footer>
     <script src="/static/js/main.js"></script>
   </body>
 </html>

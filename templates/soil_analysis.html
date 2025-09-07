@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Soil Analysis</h2>
+
+<div class="mb-4">
+  <button id="btnAnalyze" class="bg-green-600 text-white px-4 py-2 rounded">Analyze Soil</button>
+</div>
+
+<div id="soilInfo" class="bg-white p-4 rounded shadow hidden">
+  <h3 class="font-semibold mb-2">Soil Analysis Results</h3>
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-green-100 p-4 rounded">
+      <div class="text-2xl font-bold" id="ph">-</div>
+      <div>pH Level</div>
+    </div>
+    <div class="bg-blue-100 p-4 rounded">
+      <div class="text-2xl font-bold" id="moisture">-</div>
+      <div>Moisture</div>
+    </div>
+  </div>
+  <div class="mt-4">
+    <h4 class="font-semibold">Nutrients</h4>
+    <ul id="nutrients" class="list-disc list-inside"></ul>
+  </div>
+  <div class="mt-4">
+    <h4 class="font-semibold">Recommendations</h4>
+    <ul id="recommendations" class="list-disc list-inside"></ul>
+  </div>
+</div>
+
+<script>
+async function fetchSoilAnalysis() {
+  const res = await fetch('/api/soil-analysis');
+  if (!res.ok) {
+    alert('Failed to fetch soil analysis data');
+    return;
+  }
+  const data = await res.json();
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
+  document.getElementById('ph').textContent = data.ph_level;
+  document.getElementById('moisture').textContent = data.moisture;
+
+  const nutrientsList = document.getElementById('nutrients');
+  nutrientsList.innerHTML = '';
+  for (const [nutrient, level] of Object.entries(data.nutrients)) {
+    const li = document.createElement('li');
+    li.textContent = `${nutrient}: ${level}`;
+    nutrientsList.appendChild(li);
+  }
+
+  const recList = document.getElementById('recommendations');
+  recList.innerHTML = '';
+  data.recommendations.forEach(rec => {
+    const li = document.createElement('li');
+    li.textContent = rec;
+    recList.appendChild(li);
+  });
+
+  document.getElementById('soilInfo').classList.remove('hidden');
+}
+
+document.getElementById('btnAnalyze').addEventListener('click', fetchSoilAnalysis);
+</script>
+{% endblock %}

@@ -1,8 +1,37 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="max-w-lg mx-auto bg-white p-6 rounded shadow">
-  <h2 class="text-xl font-bold">Advisory Result</h2>
-  <pre>{{ result | tojson(indent=2) }}</pre>
-  <a href="/dashboard" class="mt-4 inline-block">Back to dashboard</a>
+<div class="max-w-6xl mx-auto bg-white p-10 rounded-lg shadow-lg fade-in min-h-[600px]">
+  <h2 class="text-4xl font-extrabold mb-8 text-gray-900">Advisory Result</h2>
+  {% if result %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {% for key, value in result.items() %}
+        <div class="bg-green-50 p-6 rounded-lg shadow-inner border border-green-200">
+          <h3 class="text-xl font-semibold mb-4 text-green-800">{{ key | replace('_', ' ') | title }}</h3>
+          {% if value is string %}
+            <p class="text-gray-700">{{ value }}</p>
+          {% elif value is mapping %}
+            <ul class="list-disc list-inside text-gray-700">
+              {% for subkey, subval in value.items() %}
+                <li><strong>{{ subkey | replace('_', ' ') | title }}:</strong> {{ subval }}</li>
+              {% endfor %}
+            </ul>
+          {% elif value is iterable %}
+            <ul class="list-disc list-inside text-gray-700">
+              {% for item in value %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-gray-700">{{ value }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-600">No advisory result available.</p>
+  {% endif %}
+  <a href="/dashboard" class="mt-10 inline-block text-green-600 hover:text-green-800 font-semibold transition-colors">
+    &larr; Back to dashboard
+  </a>
 </div>
 {% endblock %}
