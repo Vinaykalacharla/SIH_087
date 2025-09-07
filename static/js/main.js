@@ -1,3 +1,5 @@
+import { startSpeechRecognition, speakText } from './voice-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   // Camera capture and upload
   const camBtn = document.getElementById('cameraBtn');
@@ -65,5 +67,85 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileMenuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
     });
+  }
+
+  // Voice control popup
+  const voiceControlPopup = document.getElementById('voiceControlPopup');
+  const closeVoicePopupBtn = document.getElementById('closeVoicePopupBtn');
+
+  // Voice control buttons in popup
+  const popupMicrophoneBtn = document.getElementById('popupMicrophoneBtn');
+  const popupMicrophoneIcon = document.getElementById('popupMicrophoneIcon');
+  const popupSpeakerBtn = document.getElementById('popupSpeakerBtn');
+  const popupSpeakerIcon = document.getElementById('popupSpeakerIcon');
+
+  console.log('Voice popup elements found:', {
+    voiceControlPopup,
+    popupMicrophoneBtn,
+    popupMicrophoneIcon,
+    popupSpeakerBtn,
+    popupSpeakerIcon
+  });
+
+  // Show voice popup after a delay or on user interaction
+  setTimeout(() => {
+    if (voiceControlPopup) {
+      voiceControlPopup.classList.remove('hidden');
+      console.log('Voice popup shown');
+    }
+  }, 2000); // Show after 2 seconds
+
+  // Close popup button
+  if (closeVoicePopupBtn) {
+    closeVoicePopupBtn.addEventListener('click', () => {
+      if (voiceControlPopup) {
+        voiceControlPopup.classList.add('hidden');
+        console.log('Voice popup hidden');
+      }
+    });
+  }
+
+  // Popup microphone button
+  if (popupMicrophoneBtn && popupMicrophoneIcon) {
+    console.log('Setting up popup microphone button listener');
+    let recognizing = false;
+
+    popupMicrophoneBtn.addEventListener('click', () => {
+      console.log('Popup microphone button clicked, recognizing:', recognizing);
+      if (!recognizing) {
+        recognizing = true;
+        popupMicrophoneIcon.classList.add('text-red-400');
+        console.log('Starting speech recognition...');
+        startSpeechRecognition('en-IN', (result) => {
+          console.log('Speech recognition result:', result);
+          recognizing = false;
+          popupMicrophoneIcon.classList.remove('text-red-400');
+          alert('You said: ' + result);
+          // You can add further processing of the speech result here
+        }, (error) => {
+          console.error('Speech recognition error:', error);
+          recognizing = false;
+          popupMicrophoneIcon.classList.remove('text-red-400');
+          alert('Speech recognition error: ' + error);
+        });
+      } else {
+        console.log('Already recognizing, ignoring click');
+      }
+    });
+  } else {
+    console.error('Popup microphone button or icon not found');
+  }
+
+  // Popup speaker button
+  if (popupSpeakerBtn) {
+    console.log('Setting up popup speaker button listener');
+    popupSpeakerBtn.addEventListener('click', () => {
+      console.log('Popup speaker button clicked');
+      const pageText = document.body.innerText || document.body.textContent;
+      console.log('Page text length:', pageText.length);
+      speakText(pageText);
+    });
+  } else {
+    console.error('Popup speaker button not found');
   }
 });

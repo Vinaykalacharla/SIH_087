@@ -9,57 +9,125 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   </head>
   <body class="bg-gradient-to-br from-green-50 to-blue-50 text-gray-900 min-h-screen">
-    <nav class="bg-white shadow-lg border-b border-green-100">
-      <div class="container mx-auto px-4 py-4">
+    <nav class="bg-gradient-to-r from-green-600 to-green-700 shadow-xl border-b-4 border-green-800">
+      <div class="container mx-auto px-6 py-5">
         <div class="flex justify-between items-center">
-          <a href="/" class="flex items-center space-x-2">
-            <i class="fas fa-leaf text-green-600 text-2xl"></i>
-            <span class="font-bold text-xl text-gray-800">SmartCrop</span>
+          <!-- Logo Section -->
+          <a href="/" class="flex items-center space-x-3 group">
+            <div class="bg-white bg-opacity-20 p-2 rounded-lg group-hover:bg-opacity-30 transition-all duration-300">
+              <i class="fas fa-leaf text-white text-3xl group-hover:scale-110 transition-transform duration-300"></i>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-bold text-2xl text-white tracking-wide">SmartCrop</span>
+              <span class="text-green-100 text-sm font-medium">Agricultural Solutions</span>
+            </div>
           </a>
-          <div class="hidden md:flex space-x-6 items-center">
+
+          <!-- Desktop Navigation -->
+          <div class="hidden lg:flex items-center space-x-6">
             {% if session.user_id %}
-              <a href="/dashboard" class="text-gray-700 hover:text-green-600 transition-colors">Dashboard</a>
-              <a href="/analytics" class="text-gray-700 hover:text-green-600 transition-colors">Analytics</a>
-              <a href="/weather" class="text-gray-700 hover:text-green-600 transition-colors">Weather</a>
-              <a href="/crop-calendar" class="text-gray-700 hover:text-green-600 transition-colors">Crop Calendar</a>
-              <a href="/soil-analysis" class="text-gray-700 hover:text-green-600 transition-colors">Soil Analysis</a>
-              <a href="/market-prices" class="text-gray-700 hover:text-green-600 transition-colors">Market Prices</a>
-              <a href="/farm-management" class="text-gray-700 hover:text-green-600 transition-colors">Farm Management</a>
-              <a href="/upload-pest" class="text-gray-700 hover:text-green-600 transition-colors">Detect Pest</a>
-              <button id="darkModeToggle" aria-label="Toggle Dark Mode" class="ml-4 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                <i id="darkModeIcon" class="fas fa-moon text-gray-700 dark:text-gray-300"></i>
+              <!-- Main Navigation Links -->
+              <div class="flex items-center space-x-6">
+                <a href="/dashboard" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Dashboard
+                </a>
+                <a href="/analytics" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Analytics
+                </a>
+                <a href="/weather" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Weather
+                </a>
+                <a href="/crop-calendar" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Crop Calendar
+                </a>
+                <a href="/soil-analysis" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Soil Analysis
+                </a>
+                <a href="/market-prices" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Market Prices
+                </a>
+                <a href="/farm-management" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Farm Management
+                </a>
+                <a href="/upload-pest" class="nav-link font-semibold text-lg hover:text-green-300 transition duration-300">
+                  Detect Pest
+                </a>
+              </div>
+
+
+
+              <!-- Theme Toggle -->
+              <button id="darkModeToggle" aria-label="Toggle Dark Mode" class="theme-btn mr-4">
+                <i id="darkModeIcon" class="fas fa-moon text-xl"></i>
               </button>
-              <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">Logout</a>
+
+              <!-- Logout Button -->
+              <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+              </a>
             {% else %}
-              <a href="/login" class="text-gray-700 hover:text-green-600 transition-colors">Login</a>
-              <a href="/register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">Sign Up</a>
+              <a href="/login" class="login-btn mr-3">
+                <i class="fas fa-sign-in-alt mr-2"></i>Login
+              </a>
+              <a href="/register" class="register-btn">
+                <i class="fas fa-user-plus mr-2"></i>Sign Up
+              </a>
             {% endif %}
           </div>
+
           <!-- Mobile menu button -->
-          <div class="md:hidden">
-            <button id="mobile-menu-btn" class="text-gray-700 hover:text-green-600">
-              <i class="fas fa-bars text-xl"></i>
+          <div class="lg:hidden">
+            <button id="mobile-menu-btn" class="text-white hover:text-green-200 p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-300">
+              <i class="fas fa-bars text-2xl"></i>
             </button>
           </div>
         </div>
+
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-gray-200">
+        <div id="mobile-menu" class="hidden lg:hidden mt-6 pb-6 border-t border-green-500 border-opacity-30">
           {% if session.user_id %}
-            <div class="flex flex-col space-y-2 mt-4">
-              <a href="/dashboard" class="text-gray-700 hover:text-green-600 py-2">Dashboard</a>
-              <a href="/analytics" class="text-gray-700 hover:text-green-600 py-2">Analytics</a>
-              <a href="/weather" class="text-gray-700 hover:text-green-600 py-2">Weather</a>
-              <a href="/crop-calendar" class="text-gray-700 hover:text-green-600 py-2">Crop Calendar</a>
-              <a href="/soil-analysis" class="text-gray-700 hover:text-green-600 py-2">Soil Analysis</a>
-              <a href="/market-prices" class="text-gray-700 hover:text-green-600 py-2">Market Prices</a>
-              <a href="/farm-management" class="text-gray-700 hover:text-green-600 py-2">Farm Management</a>
-              <a href="/upload-pest" class="text-gray-700 hover:text-green-600 py-2">Detect Pest</a>
-              <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg mt-2">Logout</a>
+            <div class="flex flex-col space-y-3 mt-6">
+              <a href="/dashboard" class="mobile-nav-link">
+                <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+              </a>
+              <a href="/analytics" class="mobile-nav-link">
+                <i class="fas fa-chart-bar mr-3"></i>Analytics
+              </a>
+              <a href="/weather" class="mobile-nav-link">
+                <i class="fas fa-cloud-sun mr-3"></i>Weather
+              </a>
+              <a href="/crop-calendar" class="mobile-nav-link">
+                <i class="fas fa-calendar-alt mr-3"></i>Crop Calendar
+              </a>
+              <a href="/soil-analysis" class="mobile-nav-link">
+                <i class="fas fa-flask mr-3"></i>Soil Analysis
+              </a>
+              <a href="/market-prices" class="mobile-nav-link">
+                <i class="fas fa-rupee-sign mr-3"></i>Market Prices
+              </a>
+              <a href="/farm-management" class="mobile-nav-link">
+                <i class="fas fa-tractor mr-3"></i>Farm Management
+              </a>
+              <a href="/upload-pest" class="mobile-nav-link">
+                <i class="fas fa-bug mr-3"></i>Detect Pest
+              </a>
+
+          <!-- Mobile Voice Controls -->
+          <div class="flex items-center space-x-4 mt-4 p-3 bg-green-500 bg-opacity-20 rounded-lg">
+          </div>
+
+              <a href="/logout" class="mobile-logout-btn mt-4">
+                <i class="fas fa-sign-out-alt mr-3"></i>Logout
+              </a>
             </div>
           {% else %}
-            <div class="flex flex-col space-y-2 mt-4">
-              <a href="/login" class="text-gray-700 hover:text-green-600 py-2">Login</a>
-              <a href="/register" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">Sign Up</a>
+            <div class="flex flex-col space-y-3 mt-6">
+              <a href="/login" class="mobile-login-btn">
+                <i class="fas fa-sign-in-alt mr-3"></i>Login
+              </a>
+              <a href="/register" class="mobile-register-btn">
+                <i class="fas fa-user-plus mr-3"></i>Sign Up
+              </a>
             </div>
           {% endif %}
         </div>
@@ -68,11 +136,23 @@
     <main class="w-full max-w-full px-4 py-8">
       {% block content %}{% endblock %}
     </main>
+
+    <!-- Voice Control Popup -->
+    <div id="voiceControlPopup" class="fixed bottom-6 right-6 bg-green-600 bg-opacity-90 rounded-lg shadow-lg p-4 flex items-center space-x-4 z-50 hidden">
+      <button id="popupMicrophoneBtn" aria-label="Voice Input" class="voice-btn" title="Click to speak">
+        <i id="popupMicrophoneIcon" class="fas fa-microphone text-xl text-white"></i>
+      </button>
+      <button id="popupSpeakerBtn" aria-label="Read Page Aloud" class="voice-btn" title="Read page content">
+        <i id="popupSpeakerIcon" class="fas fa-volume-up text-xl text-white"></i>
+      </button>
+      <button id="closeVoicePopupBtn" aria-label="Close Voice Controls" class="text-white text-lg font-bold focus:outline-none" title="Close voice controls">&times;</button>
+    </div>
+
     <footer class="bg-gray-800 text-white py-8 mt-16">
       <div class="container mx-auto px-4 text-center">
         <p>&copy; 2024 SmartCrop Advisory. Empowering farmers with AI-driven solutions.</p>
       </div>
     </footer>
-    <script src="/static/js/main.js"></script>
+    <script type="module" src="/static/js/main.js"></script>
   </body>
 </html>
