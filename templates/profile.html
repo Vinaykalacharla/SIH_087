@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Edit Profile</h1>
+
+        <form method="POST" class="bg-white shadow-md rounded-lg p-6">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                <input type="text" id="name" name="name" value="{{ profile.name if profile else '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                <input type="email" id="email" name="email" value="{{ profile.email if profile else '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="role" class="block text-gray-700 text-sm font-bold mb-2">Role</label>
+                <input type="text" id="role" name="role" value="{{ profile.role if profile else '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
+            <div class="mb-6">
+                <label for="language" class="block text-gray-700 text-sm font-bold mb-2">Language</label>
+                <input type="text" id="language" name="language" value="{{ profile.language if profile else '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Update Profile
+                </button>
+                <a href="{{ url_for('main.dashboard') }}" class="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-800">
+                    Back to Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

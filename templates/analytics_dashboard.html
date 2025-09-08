@@ -2,6 +2,29 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-4">Analytics Dashboard</h2>
 
+<div class="bg-white p-4 rounded shadow mb-6">
+  <h3 class="font-semibold mb-4">Enter Farm Details</h3>
+  <div class="grid grid-cols-4 gap-4 mb-4">
+    <div>
+      <label for="farmAreaInput" class="block font-semibold mb-1">Farm Area (acres)</label>
+      <input type="number" step="0.1" id="farmAreaInput" class="border rounded p-2 w-full">
+    </div>
+    <div>
+      <label for="activeCropsInput" class="block font-semibold mb-1">Active Crops</label>
+      <input type="number" min="0" id="activeCropsInput" class="border rounded p-2 w-full">
+    </div>
+    <div>
+      <label for="avgYieldInput" class="block font-semibold mb-1">Avg Yield (tons/hectare)</label>
+      <input type="number" step="0.1" id="avgYieldInput" class="border rounded p-2 w-full">
+    </div>
+    <div>
+      <label for="monthlyRevenueInput" class="block font-semibold mb-1">Monthly Revenue (₹)</label>
+      <input type="number" step="1000" id="monthlyRevenueInput" class="border rounded p-2 w-full">
+    </div>
+  </div>
+  <button id="updateBtn" class="bg-green-600 text-white px-4 py-2 rounded">Update Dashboard</button>
+</div>
+
 <div class="grid grid-cols-4 gap-6 mb-6">
   <div class="bg-white p-4 rounded shadow">
     <h3 class="font-semibold">Farm Area</h3>
@@ -25,74 +48,152 @@
 
 <div class="bg-white p-4 rounded shadow mb-6">
   <h3 class="font-semibold mb-2">Yield Performance</h3>
-  <canvas id="yieldChart" height="150"></canvas>
+  <canvas id="yieldChart" width="400" height="150"></canvas>
 </div>
 
 <div class="bg-white p-4 rounded shadow">
   <h3 class="font-semibold mb-2">Revenue & Profit Trend</h3>
-  <canvas id="revenueChart" height="150"></canvas>
+  <canvas id="revenueChart" width="400" height="150"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-async function fetchAnalytics() {
-  const res = await fetch('/api/analytics/summary');
-  if (!res.ok) {
-    alert('Failed to load analytics data');
-    return;
+let yieldChart, revenueChart;
+
+function generateSampleData(baseValue, months = 12) {
+  const data = [];
+  for (let i = 0; i < months; i++) {
+    const variation = (Math.random() - 0.5) * 0.4; // +/- 20% variation
+    data.push(Math.max(0, baseValue * (1 + variation)));
   }
-  const data = await res.json();
-
-  // Mock data for farm area and avg yield
-  document.getElementById('farmArea').textContent = '2.5';
-  document.getElementById('activeCrops').textContent = data.active_crops || '-';
-  document.getElementById('avgYield').textContent = '4.2';
-  document.getElementById('monthlyRevenue').textContent = '₹32K';
-
-  // Prepare data for charts
-  const labels = data.yield.map(d => `${d.year}-${String(d.month).padStart(2, '0')}`);
-  const yieldValues = data.yield.map(d => d.total_yield);
-  const revenueValues = data.revenue.map(d => d.total_revenue);
-
-  const ctxYield = document.getElementById('yieldChart').getContext('2d');
-  new Chart(ctxYield, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Yield',
-        data: yieldValues,
-        backgroundColor: 'rgba(34, 197, 94, 0.7)'
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
-
-  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-  new Chart(ctxRevenue, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Revenue',
-        data: revenueValues,
-        borderColor: 'rgba(234, 179, 8, 1)',
-        fill: true,
-        backgroundColor: 'rgba(234, 179, 8, 0.3)'
-      }]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
+  return data;
 }
 
-fetchAnalytics();
+async function updateDashboard() {
+  try {
+    const response = await fetch('/api/analytics/summary');
+    if (!response.ok) {
+      throw new Error('Failed to fetch analytics data');
+    }
+    const data = await response.json();
+
+    // Process yield data
+    const yieldMap = {};
+    data.yield.forEach(item => {
+      const key = `${item[0]}-${item[1]}`;
+      yieldMap[key] = item[2];
+    });
+
+    // Process revenue data
+    const revenueMap = {};
+    data.revenue.forEach(item => {
+      const key = `${item[0]}-${item[1]}`;
+      revenueMap[key] = item[2];
+    });
+
+    // Get current year
+    const currentYear = new Date().getFullYear();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const yieldData = [];
+    const revenueData = [];
+    let totalYield = 0;
+    let totalRevenue = 0;
+    let count = 0;
+
+    for (let i = 0; i < 12; i++) {
+      const month = i + 1;
+      const key = `${currentYear}-${month}`;
+      const y = yieldMap[key] || 0;
+      const r = revenueMap[key] || 0;
+      yieldData.push(y);
+      revenueData.push(r);
+      totalYield += y;
+      totalRevenue += r;
+      if (y > 0 || r > 0) count++;
+    }
+
+    const avgYield = count > 0 ? totalYield / count : 0;
+    const avgRevenue = count > 0 ? totalRevenue / count : 0;
+
+    // Update display
+    const farmArea = parseFloat(document.getElementById('farmAreaInput').value) || 0;
+    let activeCrops = data.active_crops || 0;
+    let displayAvgYield = avgYield;
+    let displayAvgRevenue = avgRevenue;
+
+    // If no real data, use input values
+    if (activeCrops === 0) {
+      activeCrops = parseInt(document.getElementById('activeCropsInput').value) || 0;
+    }
+    if (displayAvgYield === 0) {
+      displayAvgYield = parseFloat(document.getElementById('avgYieldInput').value) || 0;
+    }
+    if (displayAvgRevenue === 0) {
+      displayAvgRevenue = parseInt(document.getElementById('monthlyRevenueInput').value) || 0;
+    }
+
+    document.getElementById('farmArea').textContent = farmArea.toFixed(1);
+    document.getElementById('activeCrops').textContent = activeCrops;
+    document.getElementById('avgYield').textContent = displayAvgYield.toFixed(1);
+    document.getElementById('monthlyRevenue').textContent = `₹${displayAvgRevenue.toLocaleString()}`;
+
+    // If no real data for charts, use input values to generate sample data
+    let chartYieldData = yieldData;
+    let chartRevenueData = revenueData;
+    if (yieldData.every(v => v === 0)) {
+      chartYieldData = generateSampleData(displayAvgYield);
+    }
+    if (revenueData.every(v => v === 0)) {
+      chartRevenueData = generateSampleData(displayAvgRevenue);
+    }
+
+    // Update yield chart
+    if (yieldChart) yieldChart.destroy();
+    const ctxYield = document.getElementById('yieldChart').getContext('2d');
+    yieldChart = new Chart(ctxYield, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Yield (tons/hectare)',
+          data: chartYieldData,
+          backgroundColor: 'rgba(34, 197, 94, 0.7)'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Update revenue chart
+    if (revenueChart) revenueChart.destroy();
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    revenueChart = new Chart(ctxRevenue, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Revenue (₹)',
+          data: chartRevenueData,
+          borderColor: 'rgba(234, 179, 8, 1)',
+          fill: true,
+          backgroundColor: 'rgba(234, 179, 8, 0.3)'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error updating dashboard:', error);
+    alert('Failed to update dashboard. Please try again.');
+  }
+}
+
+document.getElementById('updateBtn').addEventListener('click', updateDashboard);
 </script>
 {% endblock %}

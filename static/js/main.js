@@ -137,15 +137,89 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Popup speaker button
-  if (popupSpeakerBtn) {
+  if (popupSpeakerBtn && popupSpeakerIcon) {
     console.log('Setting up popup speaker button listener');
+    let isSpeaking = false;
+    let currentUtterance = null;
+
     popupSpeakerBtn.addEventListener('click', () => {
-      console.log('Popup speaker button clicked');
-      const pageText = document.body.innerText || document.body.textContent;
-      console.log('Page text length:', pageText.length);
-      speakText(pageText);
+      console.log('Popup speaker button clicked, isSpeaking:', isSpeaking);
+      if (!isSpeaking) {
+        // Start speaking
+        const pageText = document.body.innerText || document.body.textContent;
+        if (pageText.trim()) {
+          console.log('Starting to speak page text, length:', pageText.length);
+          isSpeaking = true;
+          popupSpeakerIcon.classList.remove('fa-volume-up');
+          popupSpeakerIcon.classList.add('fa-stop');
+
+          // Create utterance
+          currentUtterance = new SpeechSynthesisUtterance(pageText);
+
+          // Handle speech end
+          currentUtterance.onend = () => {
+            console.log('Speech ended naturally');
+            isSpeaking = false;
+            popupSpeakerIcon.classList.remove('fa-stop');
+            popupSpeakerIcon.classList.add('fa-volume-up');
+            currentUtterance = null;
+          };
+
+          // Handle speech error
+          currentUtterance.onerror = () => {
+            console.error('Speech synthesis error');
+            isSpeaking = false;
+            popupSpeakerIcon.classList.remove('fa-stop');
+            popupSpeakerIcon.classList.add('fa-volume-up');
+            currentUtterance = null;
+          };
+
+          // Start speaking
+          window.speechSynthesis.speak(currentUtterance);
+        } else {
+          console.log('No text to speak');
+        }
+      } else {
+        // Stop speaking
+        console.log('Stopping speech');
+        if (currentUtterance) {
+          window.speechSynthesis.cancel();
+          currentUtterance = null;
+        }
+        isSpeaking = false;
+        popupSpeakerIcon.classList.remove('fa-stop');
+        popupSpeakerIcon.classList.add('fa-volume-up');
+      }
     });
   } else {
-    console.error('Popup speaker button not found');
+    console.error('Popup speaker button or icon not found');
+  }
+
+  // Profile sidebar toggle
+  const profileBtn = document.getElementById('profileBtn');
+  const profileSidebar = document.getElementById('profileSidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  if (profileBtn && profileSidebar && sidebarOverlay) {
+    // Toggle sidebar when profile button is clicked
+    profileBtn.addEventListener('click', () => {
+      profileSidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('active');
+    });
+
+    // Close sidebar when close button is clicked
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', () => {
+        profileSidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('active');
+      });
+    }
+
+    // Close sidebar when overlay is clicked
+    sidebarOverlay.addEventListener('click', () => {
+      profileSidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('active');
+    });
   }
 });

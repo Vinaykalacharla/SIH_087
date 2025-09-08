@@ -2,37 +2,44 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-4">Weather Forecast</h2>
 
-<div class="mb-4">
-  <label for="stateSelect" class="block mb-1 font-semibold">State</label>
-  <div class="flex items-center">
-    <select id="stateSelect" class="border rounded p-2 w-64">
-      <option value="">Select State</option>
-    </select>
-    <button id="micState" title="Speak State" class="ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-      🎤
+<div class="mb-4 bg-white p-4 rounded shadow">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+    <div>
+      <label for="stateSelect" class="block text-sm font-medium text-gray-700">State</label>
+      <div class="flex items-center">
+        <select id="stateSelect" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option>Select State</option>
+        </select>
+        <button id="micState" class="ml-2 p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4zM3 8a1 1 0 011-1h1a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm12 0a1 1 0 00-1-1h-1a1 1 0 00-1 1v2a1 1 0 001 1h1a1 1 0 001-1V8z"></path></svg>
+        </button>
+      </div>
+    </div>
+    <div>
+      <label for="districtSelect" class="block text-sm font-medium text-gray-700">District</label>
+      <div class="flex items-center">
+        <select id="districtSelect" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option>Select District</option>
+        </select>
+        <button id="micDistrict" class="ml-2 p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4zM3 8a1 1 0 011-1h1a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm12 0a1 1 0 00-1-1h-1a1 1 0 00-1 1v2a1 1 0 001 1h1a1 1 0 001-1V8z"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mt-4 flex justify-between items-center">
+    <button id="btnFetch" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      Fetch Weather
+    </button>
+    <button id="btnSpeak" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+      Speak Forecast
     </button>
   </div>
 </div>
 
-<div class="mb-4">
-  <label for="districtSelect" class="block mb-1 font-semibold">District</label>
-  <div class="flex items-center">
-    <select id="districtSelect" class="border rounded p-2 w-64" disabled>
-      <option value="">Select District</option>
-    </select>
-    <button id="micDistrict" title="Speak District" class="ml-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700" disabled>
-      🎤
-    </button>
-  </div>
-</div>
-
-<button id="btnFetch" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Get Weather</button>
-<button id="btnSpeak" class="bg-yellow-600 text-white px-4 py-2 rounded ml-2" disabled>🔊 Speak Forecast</button>
-
-<div id="weatherInfo" class="bg-white p-4 rounded shadow mt-4">
-  <h3 class="font-semibold mb-2">Current Weather</h3>
-  <div id="weatherError" class="text-red-600 font-semibold mb-2 hidden"></div>
-  <div class="grid grid-cols-4 gap-4 text-center">
+<div id="weatherInfo" class="bg-white p-4 rounded shadow mb-6">
+  <h3 class="font-semibold mb-2">Current Weather in <span id="currentLocation">-</span></h3>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
     <div class="bg-green-100 p-4 rounded">
       <div class="text-3xl" id="temp">-</div>
       <div>Temperature (°C)</div>
@@ -46,18 +53,19 @@
       <div>Wind Speed (m/s)</div>
     </div>
     <div class="bg-yellow-100 p-4 rounded">
-      <div class="text-3xl" id="condition">-</div>
+      <div class="text-lg capitalize" id="condition">-</div>
       <div>Condition</div>
     </div>
   </div>
 </div>
 
-<div id="forecastInfo" class="bg-white p-4 rounded shadow mt-6">
-  <h3 class="font-semibold mb-2">7-Day Forecast</h3>
-  <div id="forecastContainer" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-    <!-- Forecast cards will be inserted here -->
-  </div>
+<div id="forecastInfo" class="bg-white p-4 rounded shadow">
+    <h3 class="font-semibold mb-2">7-Day Forecast</h3>
+    <div id="forecastGrid" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <!-- Forecast data will be injected here -->
+    </div>
 </div>
+
 
 <script>
 const stateSelect = document.getElementById('stateSelect');
@@ -65,180 +73,129 @@ const districtSelect = document.getElementById('districtSelect');
 const micState = document.getElementById('micState');
 const micDistrict = document.getElementById('micDistrict');
 const btnFetch = document.getElementById('btnFetch');
-const btnSpeak = document.getElementById('btnSpeak');
-const weatherError = document.getElementById('weatherError');
-const forecastContainer = document.getElementById('forecastContainer');
+const btnSpeakForecast = document.getElementById('btnSpeak');
 
-let currentForecastText = '';
+let statesDistricts = {};
 
-async function loadStatesAndDistricts() {
-  try {
-    const res = await fetch('/static/data/india_states_districts.json');
-    const data = await res.json();
-    for (const state in data) {
-      const option = document.createElement('option');
-      option.value = state;
-      option.textContent = state;
-      stateSelect.appendChild(option);
+async function loadStatesDistricts() {
+    try {
+        const res = await fetch('/static/data/states-districts.json');
+        statesDistricts = await res.json();
+        const states = Object.keys(statesDistricts);
+        states.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Failed to load states and districts:', error);
+        alert('Could not load location data. Please check the console for errors and verify the states-districts.json file.');
+
     }
-    stateSelect.disabled = false;
-    stateSelect.addEventListener('change', () => {
-      const districts = data[stateSelect.value] || [];
-      districtSelect.innerHTML = '<option value="">Select District</option>';
-      districts.forEach(district => {
-        const option = document.createElement('option');
-        option.value = district;
-        option.textContent = district;
-        districtSelect.appendChild(option);
-      });
-      districtSelect.disabled = districts.length === 0;
-      micDistrict.disabled = districts.length === 0;
-    });
-  } catch (error) {
-    console.error('Failed to load states and districts:', error);
-  }
 }
 
-async function fetchWeather(state, district) {
-  const location = `${district}, ${state}`;
-  const urlCurrent = `/api/weather/current?location=${encodeURIComponent(location)}`;
-  const urlForecast = `/api/weather/forecast?location=${encodeURIComponent(location)}`;
-
-  weatherError.classList.add('hidden');
-  weatherError.textContent = '';
-  btnSpeak.disabled = true;
-  forecastContainer.innerHTML = '';
-  currentForecastText = '';
-
-  try {
-    const resCurrent = await fetch(urlCurrent);
-    if (!resCurrent.ok) {
-      const err = await resCurrent.json();
-      weatherError.textContent = err.error || 'Failed to fetch current weather data';
-      weatherError.classList.remove('hidden');
-      return;
+function loadDistricts() {
+    const selectedState = stateSelect.value;
+    districtSelect.innerHTML = '<option>Select District</option>'; // Clear previous districts
+    if (selectedState && statesDistricts[selectedState]) {
+        statesDistricts[selectedState].forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        });
     }
-    const dataCurrent = await resCurrent.json();
-    document.getElementById('temp').textContent = dataCurrent.temperature;
-    document.getElementById('humidity').textContent = dataCurrent.humidity;
-    document.getElementById('wind').textContent = dataCurrent.wind_speed;
-    document.getElementById('condition').textContent = dataCurrent.condition;
-
-    const resForecast = await fetch(urlForecast);
-    if (!resForecast.ok) {
-      const err = await resForecast.json();
-      weatherError.textContent = err.error || 'Failed to fetch forecast data';
-      weatherError.classList.remove('hidden');
-      return;
-    }
-    const dataForecast = await resForecast.json();
-    forecastContainer.innerHTML = '';
-    currentForecastText = `Weather forecast for ${location}: `;
-    dataForecast.daily_forecasts.forEach(day => {
-      const date = new Date(day.date * 1000);
-      const options = { weekday: 'short', month: 'short', day: 'numeric' };
-      const dateStr = date.toLocaleDateString(undefined, options);
-      const iconUrl = `http://openweathermap.org/img/wn/${day.icon}@2x.png`;
-      const card = document.createElement('div');
-      card.className = 'bg-blue-100 p-4 rounded shadow';
-      card.innerHTML = `
-        <div class="font-semibold">${dateStr}</div>
-        <img src="${iconUrl}" alt="${day.condition}" class="mx-auto" />
-        <div>${day.condition}</div>
-        <div>Day: ${day.temp_day} °C</div>
-        <div>Night: ${day.temp_night} °C</div>
-        <div>Humidity: ${day.humidity}%</div>
-        <div>Wind: ${day.wind_speed} m/s</div>
-      `;
-      forecastContainer.appendChild(card);
-
-      currentForecastText += `${dateStr}: ${day.condition}, day temperature ${day.temp_day} degrees Celsius, night temperature ${day.temp_night} degrees Celsius. `;
-    });
-    btnSpeak.disabled = false;
-  } catch (error) {
-    weatherError.textContent = 'Error fetching weather data';
-    weatherError.classList.remove('hidden');
-    console.error('Error fetching weather data:', error);
-  }
 }
 
-function speakText(text) {
-  if (!('speechSynthesis' in window)) {
-    alert('Speech synthesis not supported in this browser.');
-    return;
-  }
-  const utterance = new SpeechSynthesisUtterance(text);
-  window.speechSynthesis.speak(utterance);
+async function fetchCurrentWeather(location) {
+    try {
+        const res = await fetch(`/api/weather/current?location=${encodeURIComponent(location)}`);
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch current weather');
+        }
+        const data = await res.json();
+        document.getElementById('currentLocation').textContent = data.location;
+        document.getElementById('temp').textContent = data.temperature.toFixed(1);
+        document.getElementById('humidity').textContent = data.humidity;
+        document.getElementById('wind').textContent = data.wind_speed.toFixed(1);
+        document.getElementById('condition').textContent = data.condition;
+        return data;
+    } catch (error) {
+        console.error('Error fetching current weather:', error);
+        alert(`Error: ${error.message}`);
+        return null;
+    }
 }
 
-micState.addEventListener('click', () => {
-  startSpeechRecognition('state');
-});
+async function fetchForecast(location) {
+    try {
+        const res = await fetch(`/api/weather/forecast?location=${encodeURIComponent(location)}`);
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch forecast');
+        }
+        const data = await res.json();
+        const forecastGrid = document.getElementById('forecastGrid');
+        forecastGrid.innerHTML = ''; // Clear previous forecast
+        data.daily_forecasts.forEach(day => {
+            const date = new Date(day.date * 1000);
+            const dayCard = `
+                <div class="bg-gray-50 p-3 rounded text-center shadow-sm">
+                    <div class="font-bold">${date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                    <div>${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                    <img src="http://openweathermap.org/img/wn/${day.icon}.png" alt="${day.condition}" class="mx-auto">
+                    <div class="text-sm capitalize">${day.condition}</div>
+                    <div class="mt-2">
+                        <span class="font-semibold">${day.temp_day.toFixed(1)}°</span> / 
+                        <span class="text-gray-600">${day.temp_night.toFixed(1)}°</span>
+                    </div>
+                </div>
+            `;
+            forecastGrid.innerHTML += dayCard;
+        });
+        return data;
+    } catch (error) {
+        console.error('Error fetching forecast:', error);
+        alert(`Error: ${error.message}`);
+        return null;
+    }
+}
 
-micDistrict.addEventListener('click', () => {
-  startSpeechRecognition('district');
-});
-
-btnSpeak.addEventListener('click', () => {
-  if (currentForecastText) {
-    speakText(currentForecastText);
-  }
-});
-
-function startSpeechRecognition(type) {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert('Speech recognition not supported in this browser.');
-    return;
-  }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-IN';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  recognition.onresult = (event) => {
-    const speechResult = event.results[0][0].transcript.trim();
-    if (type === 'state') {
-      const options = Array.from(stateSelect.options).map(opt => opt.value.toLowerCase());
-      const matched = options.find(opt => opt === speechResult.toLowerCase());
-      if (matched) {
-        stateSelect.value = matched;
-        stateSelect.dispatchEvent(new Event('change'));
-      } else {
-        alert(`State "${speechResult}" not recognized.`);
-      }
-    } else if (type === 'district') {
-      if (districtSelect.disabled) {
-        alert('Please select a state first.');
+function startSpeechRecognition(targetSelect) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Speech recognition not supported in this browser.");
         return;
-      }
-      const options = Array.from(districtSelect.options).map(opt => opt.value.toLowerCase());
-      const matched = options.find(opt => opt === speechResult.toLowerCase());
-      if (matched) {
-        districtSelect.value = matched;
-      } else {
-        alert(`District "${speechResult}" not recognized.`);
-      }
     }
-  };
 
-  recognition.onerror = (event) => {
-    alert('Speech recognition error: ' + event.error);
-  };
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-  recognition.start();
-});
+    recognition.start();
 
-btnFetch.addEventListener('click', () => {
-  const state = stateSelect.value;
-  const district = districtSelect.value;
-  if (state && district) {
-    fetchWeather(state, district);
-  } else {
-    alert('Please select both state and district');
-  }
-});
+    recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        const options = Array.from(targetSelect.options);
+        const foundOption = options.find(option => option.value.toLowerCase() === speechResult.toLowerCase());
+        if (foundOption) {
+            targetSelect.value = foundOption.value;
+            if (targetSelect === stateSelect) {
+                loadDistricts();
+            }
+        } else {
+            alert(`Could not find "${speechResult}". Please try again.`);
+        }
+    };
 
-loadStatesAndDistricts();
-</script>
+    recognition.onspeechend = () => {
+        recognition.stop();
+    };
+
+loadStatesDistricts();
+}
+loadStatesDistricts();
 {% endblock %}

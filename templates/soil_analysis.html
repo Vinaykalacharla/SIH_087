@@ -2,66 +2,102 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-4">Soil Analysis</h2>
 
-<div class="mb-4">
-  <button id="btnAnalyze" class="bg-green-600 text-white px-4 py-2 rounded">Analyze Soil</button>
-</div>
+<form id="soilForm" class="mb-4 bg-white p-4 rounded shadow">
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label for="phInput" class="block font-semibold mb-1">pH Level</label>
+      <input type="number" step="0.1" min="0" max="14" id="phInput" name="ph_level" class="border rounded p-2 w-full" required>
+    </div>
+    <div>
+      <label for="moistureInput" class="block font-semibold mb-1">Moisture (%)</label>
+      <input type="number" step="1" min="0" max="100" id="moistureInput" name="moisture" class="border rounded p-2 w-full" required>
+    </div>
+    <div>
+      <label for="nitrogenInput" class="block font-semibold mb-1">Nitrogen (N)</label>
+      <input type="number" step="1" min="0" max="100" id="nitrogenInput" name="nitrogen" class="border rounded p-2 w-full" required>
+    </div>
+    <div>
+      <label for="phosphorusInput" class="block font-semibold mb-1">Phosphorus (P)</label>
+      <input type="number" step="1" min="0" max="100" id="phosphorusInput" name="phosphorus" class="border rounded p-2 w-full" required>
+    </div>
+    <div>
+      <label for="potassiumInput" class="block font-semibold mb-1">Potassium (K)</label>
+      <input type="number" step="1" min="0" max="100" id="potassiumInput" name="potassium" class="border rounded p-2 w-full" required>
+    </div>
+  </div>
+  <button type="submit" id="btnAnalyze" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">Analyze Soil</button>
+</form>
 
 <div id="soilInfo" class="bg-white p-4 rounded shadow hidden">
   <h3 class="font-semibold mb-2">Soil Analysis Results</h3>
   <div class="grid grid-cols-2 gap-4">
     <div class="bg-green-100 p-4 rounded">
-      <div class="text-2xl font-bold" id="ph">-</div>
+      <div class="text-2xl font-bold" id="phResult">-</div>
       <div>pH Level</div>
     </div>
     <div class="bg-blue-100 p-4 rounded">
-      <div class="text-2xl font-bold" id="moisture">-</div>
-      <div>Moisture</div>
+      <div class="text-2xl font-bold" id="moistureResult">-</div>
+      <div>Moisture (%)</div>
     </div>
   </div>
   <div class="mt-4">
     <h4 class="font-semibold">Nutrients</h4>
-    <ul id="nutrients" class="list-disc list-inside"></ul>
+    <ul id="nutrientsResult" class="list-disc list-inside"></ul>
   </div>
   <div class="mt-4">
     <h4 class="font-semibold">Recommendations</h4>
-    <ul id="recommendations" class="list-disc list-inside"></ul>
+    <ul id="recommendationsResult" class="list-disc list-inside"></ul>
   </div>
 </div>
 
 <script>
-async function fetchSoilAnalysis() {
-  const res = await fetch('/api/soil-analysis');
+document.getElementById('soilForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    ph_level: parseFloat(form.ph_level.value),
+    moisture: parseInt(form.moisture.value),
+    nitrogen: parseInt(form.nitrogen.value),
+    phosphorus: parseInt(form.phosphorus.value),
+    potassium: parseInt(form.potassium.value)
+  };
+
+  const res = await fetch('/api/soil-analysis', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+
   if (!res.ok) {
     alert('Failed to fetch soil analysis data');
     return;
   }
-  const data = await res.json();
-  if (data.error) {
-    alert(data.error);
+  const result = await res.json();
+  if (result.error) {
+    alert(result.error);
     return;
   }
-  document.getElementById('ph').textContent = data.ph_level;
-  document.getElementById('moisture').textContent = data.moisture;
 
-  const nutrientsList = document.getElementById('nutrients');
+  document.getElementById('phResult').textContent = result.ph_level;
+  document.getElementById('moistureResult').textContent = result.moisture;
+
+  const nutrientsList = document.getElementById('nutrientsResult');
   nutrientsList.innerHTML = '';
-  for (const [nutrient, level] of Object.entries(data.nutrients)) {
+  for (const [nutrient, level] of Object.entries(result.nutrients)) {
     const li = document.createElement('li');
     li.textContent = `${nutrient}: ${level}`;
     nutrientsList.appendChild(li);
   }
 
-  const recList = document.getElementById('recommendations');
+  const recList = document.getElementById('recommendationsResult');
   recList.innerHTML = '';
-  data.recommendations.forEach(rec => {
+  result.recommendations.forEach(rec => {
     const li = document.createElement('li');
     li.textContent = rec;
     recList.appendChild(li);
   });
 
   document.getElementById('soilInfo').classList.remove('hidden');
-}
-
-document.getElementById('btnAnalyze').addEventListener('click', fetchSoilAnalysis);
+});
 </script>
 {% endblock %}

@@ -2,6 +2,7 @@
 from flask import Flask, render_template
 from config import Config
 import db as db_module
+from api_weather import bp as weather_bp
 
 def create_app():
     app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -11,7 +12,7 @@ def create_app():
 
     # import route modules
     import auth
-    import main
+    import main # Assuming the route is in main.py
     import api
     import admin
     import api_analytics
@@ -22,15 +23,16 @@ def create_app():
     import api_farm_management
 
     app.register_blueprint(auth.bp)
-    app.register_blueprint(main.bp)
+    app.register_blueprint(main.bp) # Register the main blueprint
     app.register_blueprint(api.bp, url_prefix='/api')
     app.register_blueprint(admin.bp, url_prefix='/admin')
     app.register_blueprint(api_analytics.bp, url_prefix='/api')
-    app.register_blueprint(api_weather.bp, url_prefix='/api')
     app.register_blueprint(api_crop_calendar.bp, url_prefix='/api')
     app.register_blueprint(api_soil_analysis.bp, url_prefix='/api')
     app.register_blueprint(api_market_prices.bp, url_prefix='/api')
     app.register_blueprint(api_farm_management.bp, url_prefix='/api')
+    app.register_blueprint(weather_bp, url_prefix='/api')
+
 
     @app.route('/')
     def index():
