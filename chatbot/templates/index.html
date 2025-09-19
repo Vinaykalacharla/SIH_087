@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIH Smart Crop Advisor</title>
+  <link href="/static/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="chat-wrapper">
+    <h2>SIH: Smart Crop Advisor</h2>
+    <div id="chat" class="chat-box"></div>
+    <div class="input-row">
+      <textarea id="message" placeholder="Type in your language (e.g., हिंदी, తెలుగు)"></textarea>
+      <select id="lang" aria-label="Select language">
+        <option value="auto">Auto</option>
+        <option value="hi">हिंदी (hi)</option>
+        <option value="te">తెలుగు (te)</option>
+        <option value="ta">தமிழ் (ta)</option>
+        <option value="bn">বাংলা (bn)</option>
+        <option value="mr">मराठी (mr)</option>
+        <option value="en">English</option>
+      </select>
+      <button id="send" aria-label="Send message">Send</button>
+    </div>
+  </div>
+  <script src="/static/chat.js"></script>
+</body>
+</html>

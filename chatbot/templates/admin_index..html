@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Admin - SIH</title><link href="/static/styles.css" rel="stylesheet"/></head>
+<body>
+  <div class="admin">
+    <h2>Admin - Recent Sessions</h2>
+    <ul>
+      {% for s in sessions %}
+        <li><a href="{{ url_for('admin.view_session', sid=s.id) }}">Session {{ s.id }} — {{ s.user_id }} — {{ s.created_at }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>

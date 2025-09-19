@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Session {{ session.id }}</title><link href="/static/styles.css" rel="stylesheet"/></head>
+<body>
+  <div class="admin">
+    <h2>Session {{ session.id }} — {{ session.user_id }}</h2>
+    <div class="chat-box">
+      {% for m in messages %}
+        <div class="msg {{ 'user' if m.role=='user' else 'bot' }}">{{ m.text }}</div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

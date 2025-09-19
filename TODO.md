@@ -1,17 +1,10 @@
-# TODO: Fix Analytics Dashboard Update
+# TODO: Integrate Chatbot into Main Project
 
-## Tasks
-- [x] Modify updateDashboard() function in templates/analytics_dashboard.html to fetch real data from /api/analytics/summary
-- [x] Update DOM elements with fetched data (farm area, active crops, avg yield, monthly revenue)
-- [x] Update yield chart with real yield data from API
-- [x] Update revenue chart with real revenue data from API
-- [x] Add error handling for API fetch
-- [x] Fix display values to use input values if no real data
-- [x] Fix charts to use input values if no real data
-- [x] Add width to canvas elements
-- [x] Test the dashboard update functionality
-
-## Status
-- [x] Plan approved by user
-- [x] Implementation completed
-- [x] Issues fixed based on user feedback
+- [x] Register chatbot blueprint in app.py with url_prefix='/chatbot'
+- [x] Add chatbot popup HTML and CSS in templates/profile.html
+- [x] Include chatbot frontend JavaScript (chat.js) in profile.html
+- [x] Ensure static files are served correctly
+- [x] Style the popup chat widget for usability
+- [x] Test the integration by running the app and accessing chatbot from profile page
+- [x] Add chatbot widget to dashboard.html like IRCTC chatbot
+- [x] Add chatbot widget to ai_recommendation.html

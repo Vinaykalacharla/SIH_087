@@ -3,12 +3,17 @@ from flask import Flask, render_template
 from config import Config
 import db as db_module
 from api_weather import bp as weather_bp
+from chatbot.extensions import db as chatbot_db
+from chatbot.chatbot import chatbot_bp
 
 def create_app():
     app = Flask(__name__, static_folder='static', template_folder='templates')
     app.config.from_object(Config)
 
     # No init_pool() needed for PyMySQL
+
+    # Initialize chatbot db
+    chatbot_db.init_app(app)
 
     # import route modules
     import auth
@@ -32,6 +37,7 @@ def create_app():
     app.register_blueprint(api_market_prices.bp, url_prefix='/api')
     app.register_blueprint(api_farm_management.bp, url_prefix='/api')
     app.register_blueprint(weather_bp, url_prefix='/api')
+    app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
 
 
     @app.route('/')
