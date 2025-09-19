@@ -222,4 +222,60 @@ document.addEventListener('DOMContentLoaded', () => {
       sidebarOverlay.classList.remove('active');
     });
   }
+
+  // Chatbot widget toggle
+  const getAiRecommendationBtn = document.getElementById('get-ai-recommendation');
+  const chatbotSidebar = document.getElementById('chatbot-sidebar');
+  const closeChatbotBtn = document.getElementById('close-chatbot');
+
+  if (getAiRecommendationBtn && chatbotSidebar && closeChatbotBtn) {
+    // Show chatbot sidebar when "Get AI Recommendation" button is clicked
+    getAiRecommendationBtn.addEventListener('click', () => {
+      chatbotSidebar.classList.remove('translate-x-full');
+    });
+
+    // Hide chatbot sidebar when close button is clicked
+    closeChatbotBtn.addEventListener('click', () => {
+      chatbotSidebar.classList.add('translate-x-full');
+    });
+  }
+
+  // Make voiceControlPopup draggable
+  if (voiceControlPopup) {
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let popupStartLeft = 0;
+    let popupStartTop = 0;
+
+    voiceControlPopup.style.position = 'fixed';
+    voiceControlPopup.style.cursor = 'move';
+
+    voiceControlPopup.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const rect = voiceControlPopup.getBoundingClientRect();
+      popupStartLeft = rect.left;
+      popupStartTop = rect.top;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const deltaX = e.clientX - dragStartX;
+        const deltaY = e.clientY - dragStartY;
+        let newLeft = popupStartLeft + deltaX;
+        let newTop = popupStartTop + deltaY;
+
+        // Allow placement anywhere on screen, including corners
+        voiceControlPopup.style.left = newLeft + 'px';
+        voiceControlPopup.style.top = newTop + 'px';
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  }
 });

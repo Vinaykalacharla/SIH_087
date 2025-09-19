@@ -180,14 +180,13 @@
     </main>
 
     <!-- Voice Control Popup -->
-    <div id="voiceControlPopup" class="fixed bottom-6 right-6 bg-green-600 bg-opacity-90 rounded-lg shadow-lg p-4 flex items-center space-x-4 z-50 hidden">
+    <div id="voiceControlPopup" class="fixed bg-green-600 bg-opacity-90 rounded-lg shadow-lg p-3 flex items-center space-x-3 z-50 hidden" style="top: 80px; left: 80px; position: fixed; cursor: move; width: 160px; height: 60px;">
       <button id="popupMicrophoneBtn" aria-label="Voice Input" class="voice-btn" title="Click to speak">
         <i id="popupMicrophoneIcon" class="fas fa-microphone text-xl text-white"></i>
       </button>
       <button id="popupSpeakerBtn" aria-label="Read Page Aloud" class="voice-btn" title="Read page content">
         <i id="popupSpeakerIcon" class="fas fa-volume-up text-xl text-white"></i>
       </button>
-      <button id="closeVoicePopupBtn" aria-label="Close Voice Controls" class="text-white text-lg font-bold focus:outline-none" title="Close voice controls">&times;</button>
     </div>
 
     <footer class="bg-gray-800 text-white py-8 mt-16">
